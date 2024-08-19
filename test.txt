@@ -1,0 +1,18 @@
+pip3.10 install --user pythonanywhere
+
+pa_autoconfigure_django.py --python=3.10 https://github.com/Ahmeds-Data/Pebelonix.git
+
+
+python manage.py createsuperuser
+
+
+
+ahmedsalim
+
+49494949ahmed
+49494949ahmed
+
+python manage.py collectstatic
+
+test
+passwordistest
