@@ -49,6 +49,7 @@ ROOT_URLCONF = 'core.urls'
 LOGIN_REDIRECT_URL = "home"  
 LOGOUT_REDIRECT_URL = "dashboard"  
 TEMPLATE_DIR = os.path.join(CORE_DIR, "apps/templates")
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TEMPLATES = [
     {
