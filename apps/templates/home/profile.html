@@ -1,0 +1,357 @@
+{% extends "layouts/base.html" %}
+
+{% load static %}
+
+{% block title %} My Profile {% endblock %}
+
+{% block stylesheets %}
+<style>
+    .dweet-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        width: 100%;
+    }
+
+    .dweet-card .dweet-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .dweet-card .dweet-header .username {
+        font-weight: bold;
+    }
+
+    .dweet-card .dweet-header .timestamp {
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+
+    .dweet-card .dweet-body {
+        font-size: 1rem;
+        color: #333;
+    }
+
+    .form-container {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .form-container form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-container form textarea {
+        width: 100%;
+        height: 100px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-bottom: 10px;
+        resize: none;
+    }
+
+    .form-container form button {
+        align-self: flex-end;
+    }
+
+    .modal-content {
+        border-radius: 8px;
+    }
+
+    .profile-actions {
+        margin-top: 20px;
+    }
+
+    .upload-form {
+        position: relative;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .upload-form form {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .upload-form img {
+        margin-top: -70px;
+        position: relative;
+    }
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-xl-4">
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <div class="card shadow border-0 text-center p-0" style="height: 600px;">
+                        <div class="profile-cover rounded-top" data-background="/static/assets/img/cover.jpg"></div>
+                        <img src="{{ profile.image.url }}" class="avatar-xl rounded-circle mx-auto mt-n7 mb-4" alt="">
+                        <div class="card-body pb-5 mt-6">
+
+                            <h5 class="fw-normal">
+                                {{ profile.user.username }}
+                            </h5>
+                            <p class="text-gray mb-4">
+                                {{ profile.user.email }}
+                            </p>
+                            <form method="post" class="d-inline">
+                                {% csrf_token %}
+                                {% if profile in request.user.profile.follows.all %}
+                                <button type="submit" name="follow" value="unfollow"
+                                    class="btn btn-sm btn-danger d-inline-flex align-items-center me-2">
+                                    <svg class="icon icon-xs me-1" fill="currentColor" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M4.293 4.293a1 1 0 011.414 0L10 7.586l4.293-4.293a1 1 0 111.414 1.414L11.414 9l4.293 4.293a1 1 0 01-1.414 1.414L10 10.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z">
+                                        </path>
+                                    </svg>
+                                    Unfollow
+                                </button>
+                                {% else %}
+                                <button type="submit" name="follow" value="follow"
+                                    class="btn btn-sm btn-primary d-inline-flex align-items-center me-2">
+                                    <svg class="icon icon-xs me-1" fill="currentColor" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z">
+                                        </path>
+                                    </svg>
+                                    Follow
+                                </button>
+                                {% endif %}
+                            </form>
+                            {% if profile %}
+                            {% if profile.user == request.user %}
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                                data-bs-target="#uploadImageModal">
+                                Upload Image
+                            </button>
+                            {% else %}
+                            <a class="btn btn-sm btn-secondary"
+                                href="{% url 'send_message_to_user' username=profile.user.username %}">Send Message</a>
+                            {% endif %}
+                            {% endif %}
+                            <div class="profile-actions">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#followingModal">
+                                    Following
+                                </button>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#followersModal">
+                                    Followers
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container mt-4">
+                    <h2 class="mb-4">Profile List</h2>
+                    <div class="profile-list">
+                        {% if profiles %}
+                        {% for profile in profiles %}
+                        <div
+                            class="profile-card p-3 mb-3 border rounded d-flex justify-content-between align-items-center">
+                            <div class="profile-info d-flex align-items-center">
+                                <a href="{% url 'profile' username=profile.user.username %}"
+                                    class="text-decoration-none text-dark">
+                                    <strong>{{ profile.user.username }}</strong>
+                                </a>
+                            </div>
+                            <a href="{% url 'profile' username=profile.user.username %}"
+                                class="btn btn-sm btn-outline-primary">View Profile</a>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="profile-card p-3 mb-3 border rounded">
+                            <p class="text-center text-muted mb-0">No profiles found.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-xl-8">
+            <div class="card card-body border-0 shadow">
+                <h2 class="h5 mb-4">
+                    {% if profile %}
+                    {% if profile.user == request.user %}
+                    Posts from you and everyone
+                    {% else %}
+                    Posts by {{ profile.user.username }}
+                    {% endif %}
+                    {% else %}
+                    Posts by followed users and yourself
+                    {% endif %}
+                </h2>
+                <div class="form-container">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary">Dweet</button>
+                    </form>
+                </div>
+                <div class="dweet-list">
+                    {% if profile.user == request.user %}
+                    {% for dweet in dweets %}
+                    <div class="dweet-card">
+                        <div class="dweet-header">
+                            <span class="username">
+                                <a href="{% url 'profile' username=dweet.user.username %}"
+                                    class="text-decoration-none text-dark">
+                                    {{ dweet.user.username }}
+                                </a>
+                            </span>
+                            <span class="timestamp">{{ dweet.created_at }}</span>
+                        </div>
+                        <div class="dweet-body">
+                            {{ dweet.body }}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p>No dweets available.</p>
+                    {% endfor %}
+                    {% else %}
+                    {% for dweet in dweets %}
+                    <div class="dweet-card">
+                        <div class="dweet-header">
+                            <span class="username">
+                                <a href="{% url 'profile' username=dweet.user.username %}"
+                                    class="text-decoration-none text-dark">
+                                    {{ dweet.user.username }}
+                                </a>
+                            </span>
+                            <span class="timestamp">{{ dweet.created_at }}</span>
+                        </div>
+                        <div class="dweet-body">
+                            {{ dweet.body }}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p>No dweets available.</p>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="uploadImageModal" tabindex="-1" role="dialog" aria-labelledby="uploadImageModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadImageModalLabel">Upload Profile Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="imageUpload" class="btn btn-primary">Choose Image</label>
+                        <input type="file" id="imageUpload" name="image" class="form-control-file d-none">
+                    </div>
+                    <button type="submit" class="btn btn-secondary" name="upload_image">
+                        Upload Image
+                    </button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="followingModal" tabindex="-1" role="dialog" aria-labelledby="followingModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="followingModalLabel">Following</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-unstyled">
+                    {% if profile.follows.all %}
+                    {% for following in profile.follows.all %}
+                    <li class="d-flex align-items-center mb-2">
+                        <a href="{% url 'profile' username=following.user.username %}">
+                            {{ following.user.username }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                    {% else %}
+                    <li>No profiles followed yet.</li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="followersModal" tabindex="-1" role="dialog" aria-labelledby="followersModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="followersModalLabel">Followers</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-unstyled">
+                    {% if profile.followed_by.all %}
+                    {% for follower in profile.followed_by.all %}
+
+                    <li class="d-flex align-items-center mb-2">
+                        <a href="{% url 'profile' username=follower.user.username %}">
+                            {{ follower.user.username }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                    {% else %}
+                    <li>No followers yet.</li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var followingModal = new bootstrap.Modal(document.getElementById('followingModal'));
+        var followersModal = new bootstrap.Modal(document.getElementById('followersModal'));
+    });
+</script>
+{% endblock javascripts %}
