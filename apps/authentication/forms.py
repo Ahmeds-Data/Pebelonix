@@ -19,9 +19,14 @@ class LoginForm(forms.Form):
         widget=forms.PasswordInput(
             attrs={
                 "placeholder": "Password",
-                "class": "form-control"
+                "class": "form-control",
+                "value": "passwordistest"
             }
         ))
+    
+    def __init__(self, *args, **kwargs):
+        super(LoginForm, self).__init__(*args, **kwargs)
+        self.fields['password'].widget.attrs['value'] = 'passwordistest'
     
 class SignUpForm(UserCreationForm):
     username = forms.CharField(

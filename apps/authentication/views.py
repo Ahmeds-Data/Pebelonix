@@ -13,7 +13,8 @@ def index(request):
     return render(request, 'home/index.html')
 
 def login_view(request):
-    form = LoginForm(request.POST or None)
+    form = LoginForm(request.POST or None, initial={'username': 'test', 'password': 'passwordistest'})
+    # form = LoginForm(request.POST or None)
     msg = None
     if request.method == "POST":
         if form.is_valid():

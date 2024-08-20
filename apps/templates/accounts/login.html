@@ -1,6 +1,6 @@
 {% extends "layouts/base-fullscreen.html" %}
 
-{% block title %} Sign IN {% endblock %} 
+{% block title %} Sign In {% endblock %} 
 
 {% block stylesheets %}{% endblock stylesheets %}
 
@@ -27,7 +27,7 @@
                                     {% if msg %}
                                         {{ msg | safe }}
                                     {% else %}
-                                        Add your credentials
+                                    Add your credentials <br> Default Credentials: <strong>test / passwordistest</strong>
                                     {% endif %}                                     
                                 </p> 
                             </div>
