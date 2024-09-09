@@ -1,5 +1,7 @@
-# byte-compiled / optimized / DLL files
+# byte-compiled / optimized / python files
 __pycache__/
+*.pyc
+*~
 *.py[cod]
 
 # tests and coverage
@@ -10,19 +12,36 @@ __pycache__/
 *.db
 *.sqlite3
 *.log
+db.sqlite3
 
-# venv
+# Env
 env
 venv
+.env
+myvenv/
+venv/
 
-# other
+# macOS
+._*
 .DS_Store
+.fseventsd
+.Spotlight-V100
+
+# others
 TODO.txt
 CHANGELOG.md
 
-# javascript
-package-lock.json
+# Windows
+Thumbs.db*
+ehthumbs*.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
 
+# javascript
+package.json
+
+# Static folder at project root
+/static/
 staticfiles/*
 !staticfiles/.gitkeep 
 .vscode/symbols.json
@@ -30,3 +49,8 @@ staticfiles/*
 apps/static/assets/node_modules
 apps/static/assets/yarn.lock
 apps/static/assets/.temp
+
+# Visual Studio
+.vscode/
+.history/
+*.code-workspace

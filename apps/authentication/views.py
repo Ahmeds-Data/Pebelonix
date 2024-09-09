@@ -5,12 +5,19 @@ Copyright (c) 2024 - Ahmed Salim
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from .forms import LoginForm, SignUpForm
 from .models import Profile
 
 
+@login_required(login_url='/login/')
 def index(request):
-    return render(request, 'home/index.html')
+    # Check if the user is authenticated
+    if request.user.is_authenticated:
+        return render(request, 'home/profile.html')
+    else:
+        # Redirect to login if not authenticated
+        return redirect('login')
 
 def login_view(request):
     form = LoginForm(request.POST or None, initial={'username': 'test', 'password': 'passwordistest'})
@@ -23,7 +30,8 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect("/")
+                return redirect('/profile/')
+                # return redirect("/")
             else:
                 msg = 'Invalid credentials'
         else:
