@@ -1,4 +1,4 @@
-# Pebelonix Social Networkign
+# Pebelonix Social Networking
 
 Pebelonix is a simple social networking app built using Django that allows users to register, log in, create posts, and follow/unfollow other users. It serves as a foundation for a social platform with basic functionalities, including user authentication, posting, and following.
 
