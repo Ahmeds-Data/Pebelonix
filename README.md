@@ -6,7 +6,11 @@ The frontend uses [Volt Bootstrap 5 Dashboard]((https://demo.themesberg.com/volt
 
 The app is temporarily deployed on [PythonAnywhere](https://pebelone.pythonanywhere.com/) and aims to provide an interactive user experience with AI-powered chat on the dashboard in future updates.
 
-![screenshot](./apps/static/assets/img/screenshots.jpg)
+AI integration will assist users by answering their queries. For instance, if a user forgets a picture they sent earlier via chat, the AI will locate the message and provide direct access to it.
+
+<!-- ![screenshot](./apps/static/assets/img/screenshots.jpg) -->
+![screenshots](https://github.com/user-attachments/assets/c8ae8a9f-34b6-488b-92c6-87e0c1bea135)
+
 
 ## Features
 
@@ -133,4 +137,4 @@ The application is temporarily deployed on PythonAnywhere. You can also deploy i
 
 _Ahmed Salim - realahmedsalim@gmail.com_
 
-_I will be writing a blog on this project soon or later, but feel free to reach out if you have any questions or suggestions!_
+_I will be writing a blog or paper on this project once it is completed. However, please feel free to reach out if you have any questions, suggestions, or you would love to contribute!_
